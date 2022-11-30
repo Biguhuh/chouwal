@@ -1,51 +1,50 @@
-from taxifare.ml_logic.params import (COLUMN_NAMES_RAW,
-                                            DTYPES_RAW_OPTIMIZED,
-                                            DTYPES_RAW_OPTIMIZED_HEADLESS,
-                                            DTYPES_PROCESSED_OPTIMIZED
-                                            )
-from taxifare.data_sources.local_disk import (get_pandas_chunk, save_local_chunk)
-from taxifare.data_sources.big_query import (get_bq_chunk, save_bq_chunk)
 import os
 import pandas as pd
 
+def to_df():
+    csv_file = pd.read_csv('/Users/bastiengiudicelli/code/Biguhuh/chouwal/chouwal/PMU/data/2022_chouwal.csv')
+    df = pd.DataFrame(csv_file)
+    print("\nConversion CSV-DataFrame done 🫡")
+    return df
 
-def clean_data(df: pd.DataFrame) -> pd.DataFrame:
+def clean_data() -> pd.DataFrame:
     """
     clean raw data by removing buggy or irrelevant transactions
     or columns for the training set
     """
-    print("\n Data cleaned 🫡")
+    df = to_df()
+    # print(f'df : {df}')
 
-    return df
+    db = df[df.country != "FR "]
+    # print(f'db : {db}')
+    db = df.drop(columns = ["id", "comp", "jour","hippo", "heure", "numcourse", "cheval", "commen", "gainsCarriere",
+                            "gainsVictoires", "gainsPlace", "gainsAnneeEnCours", "gainsAnneePrecedente", "jumentPleine",
+                            "engagement", "handicapDistance", "handicapPoids", "indicateurInedit", "tempstot", "vha", "recordG",
+                            "recordGint", "txreclam", "dernierTxreclam", "createdat", "updatedat", "dernierTxreclam", "rangTxVictJock",
+                            "rangTxVictCheval", "rangTxVictEnt", "rangTxPlaceJock", "rangTxPlaceCheval", "rangTxPlaceEnt", "rangRecordG",
+                            "appetTerrain", "estSupplemente", "devise", "coat", "country", "id", "comp", "jour", "heure", "hippo", "reun",
+                            "prix", "prixnom", "partant", "groupe", "autos", "quinte", "arriv", "lice", "url", "updatedAt", "createdAt",
+                            "devise","id.1", "comp.1", "jour.1", "hippo.1", "typec.1", "partant.1", "dist.1", "devise.1", "corde.1", "age.1", "cheque.1"
+                            ])
+    # print(f'db : {db}')
 
-def get_chunk(source_name: str,
-              index: int = 0,
-              chunk_size: int = None,
-              verbose=False) -> pd.DataFrame:
-    """
-    Return a `chunk_size` rows from the source dataset, starting at row `index` (included)
-    Always assumes `source_name` (CSV or Big Query table) have headers,
-    and do not consider them as part of the data `index` count.
-    """
+    db = db.drop(columns = [ "europ", "natpis", "amat", "courseabc", "pistegp", "temperature", "forceVent", "directionVent", "nebulositeLibelleCourt", "condi", "tempscourse", "ref"])
 
-    return chunk_df
+    # print(f'db : {db}')
 
+    db = db.drop(columns = ["numero","ecurie", "distpoids", "ecar", "redkm", "redkmInt", "corde", "musiquept", "musiqueche", "jockey", "musiquejoc",
+                            "montesdujockeyjour", "couruejockeyjour", "victoirejockeyjour", "entraineur", "musiqueent", "dernierhippo", "derniernbpartants",
+                            "dernierJoc", "dernierEnt", "dernierProp", "dernierRedKm", "proprietaire", "pere", "mere", "peremere", "meteo", "handi", "reclam",
+                            "sex", "sexe", "age", "defoeil", "defoeilPrec", "derniereplace", "oeil", "dernierOeil", "typec"])
+    # print(f'db : {db}')
 
-def save_chunk(destination_name: str,
-               is_first: bool,
-               data: pd.DataFrame) -> None:
-    """
-    save chunk
-    """
+    #db = db.select_dtypes(include=['int64'])
+    # print(f'db : {db}')
 
-    if os.environ.get("DATA_SOURCE") == "big query":
+    db = db.dropna(subset=['cl']) # on vire les lignes dont les résultats ne sont pas connus
+    #print(f'db : {db}')
 
-        save_bq_chunk(table=destination_name,
-                      data=data,
-                      is_first=is_first)
+    print("\nData cleaned 🫡")
+    #print(f'{db.info()}')
 
-        return
-
-    save_local_chunk(path=destination_name,
-                     data=data,
-                     is_first=is_first)
+    return db

@@ -1,61 +1,97 @@
-
 import time
 from typing import Tuple
 import numpy as np
-from tensorflow.keras import Model, Sequential, layers, regularizers, optimizers
-from tensorflow.keras.callbacks import EarlyStopping
+from pmu_breaking.ml_logic.data import clean_data
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
+from sklearn.impute import SimpleImputer
+import pandas as pd
+import pickle
 
 end = time.perf_counter()
 
-def initialize_model(X: np.ndarray) -> Model:
+def refining_target():
+    db = clean_data()
+    mask = db['cl'].str.isnumeric()
+    db[mask == False] = 999
+    db['cl'] = pd.to_numeric(db['cl'] , errors='coerce') # on convertit toutes les valeurs en valeur int
+
+    # Tous les placés (podiums) prennent la valeur 1
+    mask1 = db['cl'] < 4
+    db[mask1] = 1
+
+    # Tous les hors podium prennent la valeur 0
+    mask2 = db['cl'] > 1
+    db[mask2] = 0
+
+    return db
+
+def define_features_target():
+    db = refining_target()
+    X = db.drop(columns = ['cl'])
+    y = db.cl
+    features = X.columns
+    print("\nFeatures and target defined 🫡")
+    # print(f'\n Features :\n {X}')
+    # print(f'\n Target :\n {y}')
+
+    return X, y, features
+
+def scaling_imputing():
+    #print(f'y : \n{y}')
+    X, y, features = define_features_target()
+    scaler = StandardScaler()
+    scaler.fit(X)
+    X = scaler.transform(X)
+
+    imputer = SimpleImputer()
+    imputer.fit(X)
+    X = imputer.transform(X)
+
+    X = pd.DataFrame(X, columns=features)
+    print("\nTarget scaled and imputed 🫡")
+    return X, y
+
+def initialize_model():
     """
     Initialize the Neural Network with random weights
     """
-
-    print("\n model initialized 🫡")
+    model = LogisticRegression()
+    print("\nModel initialized 🫡")
 
     return model
 
-
-def compile_model(model: Model, learning_rate: float) -> Model:
+def train_model():
     """
-    Compile the Neural Network
+    Fit model and return the tuple fitted_model
     """
-    optimizer = optimizers.Adam(learning_rate=learning_rate)
-    model.compile(loss="mean_squared_error", optimizer=optimizer, metrics=["mae"])
+    X_proj, y = scaling_imputing()
+    model = initialize_model()
+    model.fit(X_proj, y)
+    print(f"\nModel trained ({len(X_proj)} rows) 🫡")
 
-    print("\n model compiled🫡")
-    return model
+    return model, X_proj, y
 
-
-def train_model(model: Model,
-                X: np.ndarray,
-                y: np.ndarray,
-                batch_size=64,
-                patience=2,
-                validation_split=0.3,
-                validation_data=None) -> Tuple[Model, dict]:
-    """
-    Fit model and return a the tuple (fitted_model, history)
-    """
-
-    print(f"\n model trained ({len(X)} rows) 🫡")
-
-    return model, history
-
-
-def evaluate_model(model: Model,
-                   X: np.ndarray,
-                   y: np.ndarray,
-                   batch_size=64) -> Tuple[Model, dict]:
+def evaluate_model():
     """
     Evaluate trained model performance on dataset
     """
-
+    model, X_proj, y = train_model()
     if model is None:
         print(f"\n❌ no model to evaluate")
         return None
+    score = model.score(X_proj, y)
+    print(f"\nModel evaluated with score of {score} 🫡")
 
-    print(f"\n✅ model evaluated: loss {round(loss, 2)} \n mae {round(mae, 2)}")
+    return score
 
-    return metrics
+def save_model():
+    # Warning ! This will train again your model then save it
+    model = train_model()
+    filename = 'pmu_breaking_model.pkl'
+    pickle.dump(model, open(filename, 'wb'))
+    print('Model Saved 🫡')
+
+def predict(X_test):
+    pickled_model = pickle.load(open('pmu_breaking_model.pkl', 'rb'))
+    pickled_model.predict(X_test)
