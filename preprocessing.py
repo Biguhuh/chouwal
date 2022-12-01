@@ -15,8 +15,22 @@ def drop_the_non_frensh_races(df):
     return df
 
 
+def drop_the_leackage(df): # permet de supprimer les colonnes qui donne des info qu'on est pas senser avoir avant la course
+    pass
 
-def drop_percentage_nan(df, percertage=90):
+
+
+################################les 3 foction suivante serve a gerer les nan des colone numérique###############################################
+
+def search_percentage_nan_egla_to_cl(df, percertage=11): #permet de supprimer les colonnes qui ont un pourcentage de nan cimilaire a cl
+    lst_futur_colums = []
+    for i in df.columns:
+        if df[i].isna().sum()/len(df[i]) * 100 <= percertage and df[i].isna().sum()/len(df[i]) * 100 != 0:
+            lst_futur_colums.append(i)
+    return lst_futur_colums
+
+
+def drop_percentage_nan(df, percertage=90): # permet de supprimer les colonnes qui ont plus de 90% de valeurs manquantes
     # lst_futur_colums = []   #retirer les # pour imprimer les colonnes suprimer
     for i in df.columns:
         if df[i].isna().sum()/len(df[i]) * 100 > percertage:
@@ -25,7 +39,13 @@ def drop_percentage_nan(df, percertage=90):
     # print(f'les colonnes supprimées sont : {lst_futur_colums}')
     return df
 
+def colums_percentage_nan_dif_0(df): # permet de voir les colonnes qui ont encore des NAN
+    lst_col = df.columns[:]
+    for i in lst_col:
+        if df[i].isna().sum()/len(df[i]) * 100 != 0:
+            print(f'{i} : {df[i].isna().sum()/len(df[i]) * 100}')
 
+###############################################################################################################################################
 
 def created_y(df):
     # on suprime les non numerique
@@ -45,6 +65,7 @@ def created_y(df):
     
     return df
 
+###################################################Gestion des colonnes non numérique#####################################################
 
 def drop_useless_obj_columns(df):
     
@@ -57,7 +78,10 @@ def drop_useless_obj_columns(df):
                   'mere','derniereplace','jour','prixnom','sex'], axis=1, inplace=True) 
     
     return df
-#
+
+
+###########################################################################################################################################
+
 
 def X_y(df):
     y = df['cl']
@@ -72,4 +96,21 @@ def split_train_test(X, y ,test_size=0.3, random_state=42):
 
 
 def pipeline_preprocessing(df):
+    pass
+
+
+
+def final_preprocessing(df):
     
+    df = drop_the_non_frensh_races(df)
+    df = drop_the_leackage(df)
+    df = drop_percentage_nan(df)
+    df = drop_useless_obj_columns(df)
+    df = created_y(df)
+    
+    X, y = X_y(df)
+    X_train, X_test, y_train, y_test = split_train_test(X, y)
+    
+    pipeline_preprocessing(df)
+    
+    return df, X_train, X_test, y_train, y_test
