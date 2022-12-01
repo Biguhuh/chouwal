@@ -28,20 +28,20 @@ def drop_percentage_nan(df, percertage=90):
 
 
 def created_y(df):
-    df = df.dropna(subset=['cl'], inplace=True)
-    
-    # on convertit toutes les valeurs en valeur int
-    mask = df['cl'].str.isnumeric()
-    df['cl'][mask == False] = 0
-    df['cl'] = pd.to_numeric(df['cl'], errors='coerce') 
+    # on suprime les non numerique
+    for i in range(len(df['cl'])):
+        if not str(df['cl'][i]).isnumeric():
+            df['cl'][i] = 0
     
     # tous les placés (podiums) prennent la valeur 1
-    mask1 = df['cl'] < 4
-    df['cl'][mask1 == True] = 1 
+    for i in range(len(df['cl'])):
+        if int(df['cl'][i]) < 4:
+            df['cl'][i] = 1
     
     # tous les hors podium prennent la valeur 0
-    mask2 = df['cl'] > 1
-    df['cl'][mask2 == True] = 0
+    for i in range(len(df['cl'])):
+        if int(df['cl'][i]) > 1:
+            df['cl'][i] = 0
     
     return df
 
@@ -54,9 +54,10 @@ def drop_useless_obj_columns(df):
                   'updatedat','devise','coat','id.1','age.1','jour.1',
                   'comp.1','typec.1','hippo.1','dist.1','devise.1',
                   'url','createdAt','condi','arriv','heure','pere',
-                  'mere','derniereplace','jour','prixnom','sex'], axis=1, inplace=True)
+                  'mere','derniereplace','jour','prixnom','sex'], axis=1, inplace=True) 
     
     return df
+#
 
 def X_y(df):
     y = df['cl']
