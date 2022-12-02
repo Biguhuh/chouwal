@@ -1,5 +1,5 @@
 .env
-
+PMU/tests
 # Jupyter notebook #
 .pytest_cache
 __pycache__
