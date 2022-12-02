@@ -1,3 +1,6 @@
+from sklearn import svm
+from sklearn import datasets
+import pickle
 import time
 from typing import Tuple
 import numpy as np
@@ -68,6 +71,14 @@ def save_model():
     filename = 'pmu_breaking_model.pkl'
     pickle.dump(model, open(filename, 'wb'))
     print('Model Saved 🫡')
+
+def load_model():
+    clf = svm.SVC()
+    X, y= datasets.load_iris(return_X_y=True)
+    clf.fit(X, y)
+    s = pickle.dumps(clf)
+    clf2 = pickle.loads(s)
+    clf2.predict(X[0:1])
 
 # Predicting from saved model
 def predict_from_saved_model(X_test):
