@@ -1,4 +1,3 @@
-import os
 import pandas as pd
 
 def to_df():
