@@ -2,6 +2,7 @@
 import pandas as pd
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
 
 def to_df():
     csv_file = pd.read_csv('/Users/bastiengiudicelli/code/Biguhuh/chouwal/chouwal/PMU/data/2022_chouwal.csv')
@@ -60,10 +61,11 @@ def refining_target():
     # Tous les placés (podiums) prennent la valeur 1
     mask1 = db['cl'] < 4
     db[mask1] = 1
-
+    print("Placed horses are now equal to '1' value 🫡")
     # Tous les hors podium prennent la valeur 0
     mask2 = db['cl'] > 1
     db[mask2] = 0
+    print("Non placed horses are now equal to '0' value 🫡")
 
     return db
 
@@ -92,3 +94,13 @@ def scaling_imputing():
     X = pd.DataFrame(X, columns=features)
     print("\nTarget scaled and imputed 🫡")
     return X, y
+
+def pca():
+    # y is not scaled_imputed by previous function (no need)
+    X, y = scaling_imputing()
+    pca = PCA()
+    pca.fit(X)
+    X_proj = pca.transform(X)
+
+    print("PCA created 🫡")
+    return X_proj, y
