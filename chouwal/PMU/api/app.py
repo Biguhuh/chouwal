@@ -27,12 +27,12 @@ url = 'https://pmu_breaking.ai/predict'
 
 st.text('Fixed width text')
 st.markdown(f'The first 3 winners of this race are :\n {response["fare"]}') # see *
-st.caption('Balloons. Hundreds of them...')
+#st.caption('Balloons. Hundreds of them...')
 st.write('Dataframe pmu breaking') # df, err, func, keras!
-st.write(['st', 'is <', 3]) # see *
+#st.write(['st', 'is <', 3]) # see *
 st.title('See Horses Races') # Seahorse Races dha ha
-st.header('My header')
-st.subheader('My sub')
+#st.header('My header')
+#st.subheader('My sub')
 
 
 params = {

@@ -32,3 +32,7 @@ save_model:
 
 load_model:
 	python -c 'from pmu_breaking.ml_logic.model.Model1.model import load_model; load_model()'
+
+# Run WebApp
+streamlit:
+	-@streamlit run app.py
