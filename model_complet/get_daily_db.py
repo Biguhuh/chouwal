@@ -3,17 +3,20 @@ import requests
 from requests.auth import HTTPBasicAuth
 from datetime import date, timedelta
 import pandas as pd
+import os
 
 
-def create_date_values():
-    date_today = date.today().strftime('%Y%m%d')
-    date_yesterday = (date_today - timedelta(days=1)).strftime('%Y%m%d')
+def create_str_date_values():
+    date_today = date.today()
+    date_yesterday = date.today() - timedelta(days=1)
     return date_today, date_yesterday
 
 
 
 #downloading the database, returning a text file to convert. This text file contains 2 tables: cachedate and caractrap
 def download_data(date):
+    user = os.environ.get('USER')
+    password = os.environ.get('PASSWORD')
     url = f'http://195.15.226.172/share/pturfDay{date}.sql.gz'
     res = requests.get(url, auth=HTTPBasicAuth(user, password), timeout=10)
     data = zlib.decompress(res.content, zlib.MAX_WBITS|32)
@@ -101,7 +104,7 @@ def save_final_dataframe(data, date, status):
 
 # main function
 def get_daily_db():
-    date_today, date_yesterday = create_date_values()
+    date_today, date_yesterday = create_str_date_values()
     data_today = download_data(date_today)
     data_yesterday = download_data(date_yesterday)
     #save_today_for_pred_sql(data_today, date_today)

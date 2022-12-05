@@ -19,7 +19,7 @@ import pickle
 
 end = time.perf_counter()
 
-def build_fit_pipeline():
+def build_fit_pipeline(df):
     """
     Initialize the Neural Network with random weights
     """
