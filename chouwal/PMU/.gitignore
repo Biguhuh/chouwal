@@ -1,0 +1,11 @@
+.env
+PMU/tests
+# Jupyter notebook #
+.pytest_cache
+__pycache__
+*checkpoint.ipynb
+*.ipynb_checkpoints
+
+.DS_Store
+
+*.vscode
