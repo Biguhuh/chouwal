@@ -19,27 +19,22 @@ import pickle
 
 end = time.perf_counter()
 
-def build_fit_pipeline(df):
+def created_X_y(df):
+    X = df.drop(columns = "cl")
+    y = df.cl
+    return X, y
+
+def build_fit_pipeline(X, y = None):
     """
     Initialize the Neural Network with random weights
     """
+   
     preproc_pipe = make_pipeline(SimpleImputer(),StandardScaler(), PCA())
-    print("\nPipeline initialized 🫡")
-
-    X = df.drop(columns = "cl")
-    #print(f'X: {X}')
-
-    y = df.cl
-    #print(f'y: {y}')
-
-    preproc_pipe.fit(X)
-    X = preproc_pipe.transform(X)
-    features = X.columns
     
-    print(f"\nModel trained ({len(X)} rows) 🫡")
-    print("\nPipeline fit 🫡")
-
-    return preproc_pipe, features, X, y
+    features = X.columns
+    X = preproc_pipe.fit_transform(X)
+    
+    return preproc_pipe, features, X
 '''
 def train_model():
     """
@@ -65,14 +60,15 @@ def evaluate_model(model, X, y):
     return None
 
 # Test predicting first 3 horses (without saved model)
-def make_pred(pipe, X: pd.DataFrame = None) -> np.ndarray:
+def make_pred(X_train, X_to_pred, y_train):
     """
     Make a prediction using the latest trained model
     """
+    model = LogisticRegression()
+    model.fit(X_train, y_train)
+    
+    y_pred = model.predict_proba(X_to_pred)
 
-    y_pred = pipe.predict(X)
-
-    print(f"\n✅ Prediction : {y_pred}, with shape {y_pred.shape}")
     return y_pred
 
 # Once we are happy with the predicted value or score, we save it

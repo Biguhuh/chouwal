@@ -15,8 +15,10 @@ def create_str_date_values():
 
 #downloading the database, returning a text file to convert. This text file contains 2 tables: cachedate and caractrap
 def download_data(date):
-    user = os.environ.get('USER')
-    password = os.environ.get('PASSWORD')
+    #user = os.environ.get('USER')
+    #password = os.environ.get('PASSWORD')    ##problème d'env
+    user = 'aspiturf'
+    password = 'LW7f2c07gNPwZQaG'
     url = f'http://195.15.226.172/share/pturfDay{date}.sql.gz'
     res = requests.get(url, auth=HTTPBasicAuth(user, password), timeout=10)
     data = zlib.decompress(res.content, zlib.MAX_WBITS|32)
@@ -32,6 +34,11 @@ def save_yesterday_for_val_sql(data_y, date_y):
     with open(f'{date_y}_for_val.sql', 'w') as file:
       file.write(str(data_y))
     file.close()
+    
+def get_feautures():
+    data_ref_for_feat=pd.read_csv('model_complet/chouwal_ref_for_feat.xls')
+    features = data_ref_for_feat.columns
+    return features
 
 
 # TABLE 1
@@ -47,6 +54,7 @@ def save_cachedate_csv(data, date, status):
 
 # create cachedate as proper dataframe    
 def df_cachedate(data, date, status):
+    features = get_feautures()
     headers_1= features[0:133].tolist() + [n for n in range(0,10)]
     save_cachedate_csv(data, date, status)
 
@@ -72,6 +80,7 @@ def save_caractrap_csv(data, date, status):
 
 # create caractrap as proper dataframe    
 def df_caractrap(data, date, status):
+    features = get_feautures()
     headers_2= features[133:].tolist() + [n for n in range(0,10)]
 
     save_caractrap_csv(data, date, status)
@@ -98,6 +107,7 @@ def save_final_dataframe(data, date, status):
     
     final_df = final_df.applymap(lambda x: str(x)[1:-1] if str(x)[0] == "'" and str(x)[-1] == "'" else x)
     final_df.to_csv(f'{date}_df_{status}.csv', index=False)
+    
     return final_df
 
 
@@ -111,5 +121,6 @@ def get_daily_db():
     #save_yesterday_for_val_sql(data_yesterday, date_yesterday)
     today_df = save_final_dataframe(data_today, date_today, 'pred')
     yesterday_df = save_final_dataframe(data_yesterday, date_yesterday, 'val')
+    
     return today_df, yesterday_df
     

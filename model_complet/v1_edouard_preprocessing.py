@@ -26,7 +26,7 @@ def clean_data(df) -> pd.DataFrame:
                             "rangTxVictCheval", "rangTxVictEnt", "rangTxPlaceJock", "rangTxPlaceCheval", "rangTxPlaceEnt", "rangRecordG",
                             "appetTerrain", "estSupplemente", "devise", "coat", "country", "id", "comp", "jour", "heure", "hippo", "reun",
                             "prix", "prixnom", "partant", "groupe", "autos", "quinte", "arriv", "lice", "url", "updatedAt", "createdAt",
-                            "devise","id.1", "comp.1", "jour.1", "hippo.1", "typec.1", "partant.1", "dist.1", "devise.1", "corde.1", "age.1", "cheque.1"
+                            "devise","id.1", "jour.1", "hippo.1", "typec.1", "partant.1", "dist.1", "devise.1", "corde.1", "age.1", "cheque.1"
                             ])
     leakage = ['cotedirect', 'coteprob', 'courueentraineurjour','victoireentraineurjour' ]    # print(f'db : {db}')
     db = db.drop(columns = leakage)
@@ -58,7 +58,6 @@ def clean_data(df) -> pd.DataFrame:
     # Tous les hors podium prennent la valeur 0
     mask2 = db['cl'] > 1
     db[mask2] = 0
-    print("\ny has been refined 🫡")
     #print(f'{db.info()}')
 
     return db
