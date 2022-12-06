@@ -31,10 +31,9 @@ def build_fit_pipeline(X, y = None):
    
     preproc_pipe = make_pipeline(SimpleImputer(),StandardScaler(), PCA())
     
-    features = X.columns
     X = preproc_pipe.fit_transform(X)
     
-    return preproc_pipe, features, X
+    return preproc_pipe, X
 '''
 def train_model():
     """

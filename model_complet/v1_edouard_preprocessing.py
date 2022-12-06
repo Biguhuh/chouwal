@@ -54,7 +54,6 @@ def transphorm_cl_to_y(dd):
     dd.loc[mask_2 == True, 'cl'] = 0 # tous les hors podium prennent la valeur 0
     
     dd = dd.select_dtypes(include=['float64', 'int64'])
-    print(dd)
     
     return dd
 
