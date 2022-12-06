@@ -15,10 +15,8 @@ def create_str_date_values():
 
 #downloading the database, returning a text file to convert. This text file contains 2 tables: cachedate and caractrap
 def download_data(date):
-    #user = os.environ.get('USER')
-    #password = os.environ.get('PASSWORD')    ##problème d'env
-    user = 'aspiturf'
-    password = 'LW7f2c07gNPwZQaG'
+    user = os.environ.get('USER')
+    password = os.environ.get('PASSWORD')
     url = f'http://195.15.226.172/share/pturfDay{date}.sql.gz'
     res = requests.get(url, auth=HTTPBasicAuth(user, password), timeout=10)
     data = zlib.decompress(res.content, zlib.MAX_WBITS|32)

@@ -4,6 +4,7 @@ from model_complet.model import make_pred #evaluate_model
 #from model_complet.model import predict_from_saved_model
 from model_complet.model import build_fit_pipeline
 from model_complet.model import created_X_y
+from model_complet.v1_edouard_preprocessing import transphorm_cl_to_y
 
 
 if __name__ == '__main__':
@@ -16,6 +17,8 @@ if __name__ == '__main__':
     data_train = clean_data(df_yesterday) 
     data_to_predict = clean_data(df_today)
     print('columns has been droped🫡')
+    data_train = transphorm_cl_to_y(data_train)
+    data_to_predict = transphorm_cl_to_y(data_to_predict)
     print("\ny has been refined 🫡")
     
     #########model########

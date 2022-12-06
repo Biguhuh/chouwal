@@ -16,7 +16,6 @@ def clean_data(df) -> pd.DataFrame:
     or columns for the training set
     """
     # print(f'df : {df}')
-
     db = df[df.country != "FR "]
     # print(f'db : {db}')
     db = df.drop(columns = ["id", "comp", "jour","hippo", "heure", "numcourse", "cheval", "commen", "gainsCarriere",
@@ -33,7 +32,7 @@ def clean_data(df) -> pd.DataFrame:
 
     db = db.drop(columns = [ "europ", "natpis", "amat", "courseabc", "pistegp", "temperature", "forceVent", "directionVent", "nebulositeLibelleCourt", "condi", "tempscourse", "ref"])
 
-    # print(f'db : {db}')
+    #print(f'db : {db}')
 
     db = db.drop(columns = ["numero","ecurie", "distpoids", "ecar", "redkm", "redkmInt", "corde", "musiquept", "musiqueche", "jockey", "musiquejoc",
                             "montesdujockeyjour", "couruejockeyjour", "victoirejockeyjour", "entraineur", "musiqueent", "dernierhippo", "derniernbpartants",
@@ -41,26 +40,23 @@ def clean_data(df) -> pd.DataFrame:
                             "sex", "sexe", "age", "defoeil", "defoeilPrec", "derniereplace", "oeil", "dernierOeil", "typec"])
     # print(f'db : {db}')
 
-    #db = db.select_dtypes(include=['int64'])
-    # print(f'db : {db}')
-
-    db = db.dropna(subset=['cl']) # on vire les lignes dont les résultats ne sont pas connus
-    #print(f'db : {db}')
-
-    mask = db['cl'].str.isnumeric()
-    db[mask == False] = 999
-    db['cl'] = pd.to_numeric(db['cl'] , errors='coerce') # on convertit toutes les valeurs en valeur int
-
-    # Tous les placés (podiums) prennent la valeur 1
-    mask1 = db['cl'] < 4
-    db[mask1] = 1
-
-    # Tous les hors podium prennent la valeur 0
-    mask2 = db['cl'] > 1
-    db[mask2] = 0
-    #print(f'{db.info()}')
-
     return db
+
+def transphorm_cl_to_y(dd):
+    mask_0 = (dd['cl'].isna())
+    dd.loc[mask_0, 'cl'] = 998
+    mask = (dd['cl'].str.isnumeric())
+    dd.loc[mask == False, 'cl'] = 999
+    dd.cl = pd.to_numeric(dd.cl, errors='coerce') # on convertit toutes les valeurs en valeur int
+    mask_1 = (dd['cl'] <= 4)
+    dd.loc[mask_1 == True, 'cl'] = 1 # tous les placés (podiums) prennent la valeur 1
+    mask_2 = dd['cl'] >= 3
+    dd.loc[mask_2 == True, 'cl'] = 0 # tous les hors podium prennent la valeur 0
+    
+    dd = dd.select_dtypes(include=['float64', 'int64'])
+    print(dd)
+    
+    return dd
 
 '''
 def refining_target():
