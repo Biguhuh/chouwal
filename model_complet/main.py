@@ -1,10 +1,12 @@
 from model_complet.get_daily_db import get_daily_db
 from model_complet.v1_edouard_preprocessing import clean_data
-from model_complet.model import make_pred #evaluate_model
-#from model_complet.model import predict_from_saved_model
-from model_complet.model import build_fit_pipeline
 from model_complet.model import created_X_y
 from model_complet.v1_edouard_preprocessing import transphorm_cl_to_y
+from model_complet.affichage import affichage
+from model_complet.model import predict_from_saved_model
+from model_complet.model import create_model 
+from model_complet.v1_edouard_preprocessing import transform_all_non_numerical_value
+import os
 
 
 if __name__ == '__main__':
@@ -14,28 +16,26 @@ if __name__ == '__main__':
     print('dataframes created 🫡')
     
     #######preprocessing#######
-    data_train = clean_data(df_yesterday) 
     data_to_predict = clean_data(df_today)
     print('columns has been droped🫡')
-    data_train = transphorm_cl_to_y(data_train)
     data_to_predict = transphorm_cl_to_y(data_to_predict)
     print("\ny has been refined 🫡")
+    data_to_predict = transform_all_non_numerical_value(data_to_predict)
+    
     
     #########model########
-    X_train, y_train = created_X_y(data_train)
     X_to_pred, y_to_pred = created_X_y(data_to_predict)
-    pipe, X_train_PCA = build_fit_pipeline(X_train, y_train)
-    print("\nPipeline initialized 🫡")
-    print(f"\nModel trained ({len(X_train)} rows) 🫡")
-    print("\nPipeline fit 🫡")
-    pipe, X_proj = build_fit_pipeline(X_to_pred)
+    print(X_to_pred.shape)
+    if not os.path.exists('model2 .pkl'):
+        create_model()
+        
+    y_pred, y_pred_proba = predict_from_saved_model(X_to_pred)
     
-    #evaluate_model(pipe, X, y) # bonus , vraiment pas obligatoire + manque un train_test_split(sinon leackage)
-    y_pred = make_pred(X_train_PCA, X_proj, y_train)
     print(y_pred)
     print("\ny_pred done🫡")
     
     #######affichage#######
-    # affichage(df_today, y_pred)
+    df = affichage(df_today, y_pred, y_pred_proba)
+    print(df)
     
 

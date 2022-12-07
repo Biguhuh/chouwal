@@ -24,22 +24,34 @@ def clean_data(df) -> pd.DataFrame:
                             "recordGint", "txreclam", "dernierTxreclam", "createdat", "updatedat", "dernierTxreclam", "rangTxVictJock",
                             "rangTxVictCheval", "rangTxVictEnt", "rangTxPlaceJock", "rangTxPlaceCheval", "rangTxPlaceEnt", "rangRecordG",
                             "appetTerrain", "estSupplemente", "devise", "coat", "country", "id", "comp", "jour", "heure", "hippo", "reun",
-                            "prix", "prixnom", "partant", "groupe", "autos", "quinte", "arriv", "lice", "url", "updatedAt", "createdAt",
-                            "devise","id.1", "jour.1", "hippo.1", "typec.1", "partant.1", "dist.1", "devise.1", "corde.1", "age.1", "cheque.1"
+                            "prix", "prixnom", "partant", "groupe", "autos", "quinte", "arriv", "lice", "url", "createdAt",
+                            "devise","id.1", "jour.1", "hippo.1", "typec.1", "dist.1", "devise.1", "corde.1", "age.1", "cheque.1"
                             ])
+    
+    
     leakage = ['cotedirect', 'coteprob', 'courueentraineurjour','victoireentraineurjour' ]    # print(f'db : {db}')
     db = db.drop(columns = leakage)
 
     db = db.drop(columns = [ "europ", "natpis", "amat", "courseabc", "pistegp", "temperature", "forceVent", "directionVent", "nebulositeLibelleCourt", "condi", "tempscourse", "ref"])
 
-    #print(f'db : {db}')
 
     db = db.drop(columns = ["numero","ecurie", "distpoids", "ecar", "redkm", "redkmInt", "corde", "musiquept", "musiqueche", "jockey", "musiquejoc",
                             "montesdujockeyjour", "couruejockeyjour", "victoirejockeyjour", "entraineur", "musiqueent", "dernierhippo", "derniernbpartants",
                             "dernierJoc", "dernierEnt", "dernierProp", "dernierRedKm", "proprietaire", "pere", "mere", "peremere", "meteo", "handi", "reclam",
                             "sex", "sexe", "age", "defoeil", "defoeilPrec", "derniereplace", "oeil", "dernierOeil", "typec"])
-    # print(f'db : {db}')
-
+    if "partant.1" in db.columns:
+        db.drop(columns = ["partant.1"], axis = 1, inplace = True)
+    if "updatedAt" in db.columns:
+        db.drop(columns = ["updatedAt"], axis = 1, inplace = True)
+    if "defFirstTime" in db.columns:
+        db.drop(columns = ["defFirstTime"], axis = 1, inplace = True)
+    if "oeilFirstTime" in db.columns:
+        db.drop(columns = ["oeilFirstTime"], axis = 1, inplace = True)
+    if "comp.1" in db.columns:
+        db.drop(columns = ["comp.1"], axis = 1, inplace = True)
+    if "idJockey" in db.columns:
+        db.drop(columns = ["idJockey"], axis = 1, inplace = True)
+    
     return db
 
 def transphorm_cl_to_y(dd):
@@ -53,9 +65,14 @@ def transphorm_cl_to_y(dd):
     mask_2 = dd['cl'] >= 3
     dd.loc[mask_2 == True, 'cl'] = 0 # tous les hors podium prennent la valeur 0
     
-    dd = dd.select_dtypes(include=['float64', 'int64'])
-    
     return dd
+
+
+
+def transform_all_non_numerical_value(df):
+    df = df[df.applymap(type) != str]
+
+    return df
 
 '''
 def refining_target():
