@@ -1,8 +1,8 @@
-# Data analysis
+# Data science project
 - Document here the project: chouwal
-- Description: Project Description
-- Data Source:
-- Type of analysis:
+- Description: 2 weeks Data science project in order to apply technics learnt during Le Wagon bootcamp. The aim was to predict if a hourse would finish in the 3 first place or not. 
+- Data Source: online database
+- Team work: Lucas and Bastien as data engineers, Arnaud as team leader and Edouard as data scientist
 
 Please document the project the better you can.
 
