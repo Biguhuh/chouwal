@@ -1,0 +1,7 @@
+**/*.ipynb
+.env
+
+**/*.parquet
+**/_pychache_/
+
+cache.md
